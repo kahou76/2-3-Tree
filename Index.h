@@ -72,115 +72,12 @@ public:
                 // comes with a four node
                 curr = AddThreeNode(curr,newkeyptr);
 
-                //if parent is null
-                if(curr->getParent() == nullptr){
-                    curr = SplitWithNoParent(curr);
-                    root = curr;
-                }else {
-                    //else merge the top one to the parent
-                    //if parent is two node (A) 
-                    //situation of left and right
-
-                    //right
-                    if(IfTwoNode(curr->getParent()) && curr->getParent()->getMiddleLeft() == curr){
-                        curr->getParent()->setMiddleKey(curr->getMiddleKey());
-
-
-                        curr->getParent() = SplitWithParentRightTwoNode(curr);
-                    }
-
-                    //left
-                    if(IfTwoNode(curr->getParent()) && curr->getParent()->getLeft() == curr){
-                        curr->getParent()->setMiddleKey(curr->getParent()->getSmallKey());
-                        curr->getParent()->setSmallKey(curr->getMiddleKey());
-
-                        curr->getParent() = SplitWithParentLeft(curr);
-                        
-                    }
-
-                    //else the parent is three node (A B)
-                    //situation of left, middle, right
-                    // after insert it, fix the parent (A B C)
-
-                    //left
-                    if(IfThreeNode(curr->getParent()) && curr->getParent()->getLeft() == curr){
-                        curr->getParent() = AddThreeNode(curr->getParent(),curr->getMiddleKey());
-
-
-                        curr->getParent() = SplitWithParentLeft(curr);
-                        
-                    }
-
-                    //right
-                    if(IfThreeNode(curr->getParent()) && curr->getParent()->getRight() == curr){
-                        // curr->getParent()->setLargeKey(curr->getMiddleKey());
-
-                        // curr->getParent() = SplitWithParentRightThreeNode(curr);
-
-                        
-
-                        //while(curr->getParent() != nullptr){
-                            curr->getParent()->setLargeKey(curr->getMiddleKey());
-                            curr->getParent() = SplitWithParentRightThreeNode(curr);
-                            cout << "top small: " << curr->getParent()->getSmallKey()->getKey() << " top mid: " << curr->getParent()->getMiddleKey()->getKey() 
-                            << " top large: " << curr->getParent()->getLargeKey()->getKey() << endl;
-                            cout << "small left: " << curr->getParent()->getLeft()->getSmallKey()->getKey() << endl;
-                            cout << "small midleft: " << curr->getParent()->getMiddleLeft()->getSmallKey()->getKey() << endl;
-                            cout << "small midright: " << curr->getParent()->getMiddleRight()->getSmallKey()->getKey() << endl;
-                            cout << "small right: " << curr->getParent()->getRight()->getSmallKey()->getKey() << endl;
-                            //curr = curr->getParent();
-                        //}
-
-                        if(curr->getParent()->getParent() == nullptr){
-                            curr->getParent() = SplitWithNoParent(curr->getParent());
-                            PrintHelp(curr->getParent());
-                            // cout << "top: " << curr->getParent()->getSmallKey()->getKey() << " left: " << curr->getParent()->getLeft()->getSmallKey()->getKey() 
-                            // << " right: " << curr->getParent()->getMiddleLeft()  ->getSmallKey()->getKey() << endl;
-                             root = curr->getParent();
-                        }
-                    }
-
-                    //middle
-                    if(IfThreeNode(curr->getParent()) && curr->getParent()->getMiddleLeft() == curr){
-                        curr->getParent()->setLargeKey(curr->getParent()->getMiddleKey());
-                        curr->getParent()->setMiddleKey(curr->getMiddleKey());
-
-                        shared_ptr<Node> middleleft = make_shared<Node>(curr->getSmallKey());
-                        shared_ptr<Node> middleright = make_shared<Node>(curr->getLargeKey());
-
-                        curr->getParent()->setMiddleLeft(middleleft);
-                        middleleft->setParent(curr->getParent());
-
-                        curr->getParent()->setMiddleRight(middleright);
-                        middleright->setParent(curr->getParent());
-
-                        if(curr->getLeft() != nullptr){
-                            middleleft->setLeft(curr->getLeft());
-                            curr->getLeft()->setParent(middleleft);
-                        }
-
-                        if(curr->getMiddleLeft() != nullptr){
-                            middleleft->setMiddleLeft(curr->getMiddleLeft());
-                            curr->getMiddleLeft()->setParent(middleleft);
-                        }
-
-                        if(curr->getMiddleRight() != nullptr){
-                            middleright->setLeft(curr->getMiddleRight());
-                            curr->getMiddleRight()->setParent(middleright);
-                        }
-                        
-                        if(curr->getRight() != nullptr){
-                            middleright->setMiddleLeft(curr->getRight());
-                            curr->getRight()->setParent(middleright);
-                        }
-
-
-
-                    }
-                }
+                Split(curr);
 
             }
         }
+
+    
 
         //Search
         //if twonode (A)
@@ -229,6 +126,133 @@ public:
 
         
     }
+
+    //Split Main Function
+    void Split(shared_ptr<Node> curr){
+        //START SPLITING
+        //if parent is null
+        if(curr->getParent() == nullptr){
+            curr = SplitWithNoParent(curr);
+            root = curr;
+        }else {
+            //else merge the top one to the parent
+            //if parent is two node (A) 
+            //situation of left and right
+
+            //right
+            if(IfTwoNode(curr->getParent()) && curr->getParent()->getMiddleLeft() == curr){
+                curr->getParent()->setMiddleKey(curr->getMiddleKey());
+
+
+                curr->getParent() = SplitWithParentRightTwoNode(curr);
+            }
+
+            //left
+            else if(IfTwoNode(curr->getParent()) && curr->getParent()->getLeft() == curr){
+                curr->getParent()->setMiddleKey(curr->getParent()->getSmallKey());
+                curr->getParent()->setSmallKey(curr->getMiddleKey());
+
+                curr->getParent() = SplitWithParentLeftTwoNode(curr);
+                
+            }
+
+            //else the parent is three node (A B)
+            //situation of left, middle, right
+            // after insert it, fix the parent (A B C)
+
+            //left
+            else if(IfThreeNode(curr->getParent()) && curr->getParent()->getLeft() == curr){
+                curr->getParent() = AddThreeNode(curr->getParent(),curr->getMiddleKey());
+                curr->getParent() = SplitWithParentLeftThreeNode(curr);
+
+                Split(curr->getParent());
+                
+            }
+
+            //right
+            else if(IfThreeNode(curr->getParent()) && curr->getParent()->getRight() == curr){
+                // curr->getParent()->setLargeKey(curr->getMiddleKey());
+
+                // curr->getParent() = SplitWithParentRightThreeNode(curr);
+
+                
+
+                //while(curr->getParent() != nullptr){
+                // shared_ptr<Node> temp = make_shared<Node>();
+                // do{
+                curr->getParent()->setLargeKey(curr->getMiddleKey());
+                curr->getParent() = SplitWithParentRightThreeNode(curr);
+                    // cout << "top small: " << curr->getParent()->getSmallKey()->getKey() << " top mid: " << curr->getParent()->getMiddleKey()->getKey() 
+                    // << " top large: " << curr->getParent()->getLargeKey()->getKey() << endl;
+                    // cout << "small left: " << curr->getParent()->getLeft()->getSmallKey()->getKey() << endl;
+                    // cout << "small midleft: " << curr->getParent()->getMiddleLeft()->getSmallKey()->getKey() << endl;
+                    // cout << "small midright: " << curr->getParent()->getMiddleRight()->getSmallKey()->getKey() << endl;
+                    // cout << "small right: " << curr->getParent()->getRight()->getSmallKey()->getKey() << endl;
+                    //shared_ptr<Node> temp = curr->getParent();
+                    //curr->setParent(curr->getParent());
+                //     shared_ptr<Node> temp = curr->getParent();
+                // }while (temp->getParent() != nullptr);
+
+                //no matter what the parent has to be split
+                Split(curr->getParent());
+
+                // if(temp->getParent() == nullptr){
+                //     shared_ptr<Node> save = temp;
+                //     save= SplitWithNoParent(save);
+                //     //PrintHelp(temp);
+                //     // cout << "top small: " << temp->getSmallKey()->getKey() << 
+                //     // " top mid: " << temp->getMiddleKey()->getKey() << 
+                //     // " top large: " << temp->getLargeKey()->getKey() << endl;
+                //     // cout << " left: " << temp->getLeft()->getSmallKey()->getKey() << endl;
+                //     // cout << " mid left: " << temp->getMiddleLeft()->getSmallKey()->getKey() << endl;
+                //     // cout << " mid right: " << temp->getMiddleRight()->getSmallKey()->getKey() << endl;
+                //     // cout << " right: " << temp->getRight()->getSmallKey()->getKey() << endl;
+                    
+                //    // << " right: " << curr->getParent()->getMiddleLeft()  ->getSmallKey()->getKey() << endl;
+                //      root = save;
+                // }
+            }
+
+            //middle
+            else if(IfThreeNode(curr->getParent()) && curr->getParent()->getMiddleLeft() == curr){
+                curr->getParent()->setLargeKey(curr->getParent()->getMiddleKey());
+                curr->getParent()->setMiddleKey(curr->getMiddleKey());
+
+                shared_ptr<Node> middleleft = make_shared<Node>(curr->getSmallKey());
+                shared_ptr<Node> middleright = make_shared<Node>(curr->getLargeKey());
+
+                curr->getParent()->setMiddleLeft(middleleft);
+                middleleft->setParent(curr->getParent());
+
+                curr->getParent()->setMiddleRight(middleright);
+                middleright->setParent(curr->getParent());
+
+                if(curr->getLeft() != nullptr){
+                    middleleft->setLeft(curr->getLeft());
+                    curr->getLeft()->setParent(middleleft);
+                }
+
+                if(curr->getMiddleLeft() != nullptr){
+                    middleleft->setMiddleLeft(curr->getMiddleLeft());
+                    curr->getMiddleLeft()->setParent(middleleft);
+                }
+
+                if(curr->getMiddleRight() != nullptr){
+                    middleright->setLeft(curr->getMiddleRight());
+                    curr->getMiddleRight()->setParent(middleright);
+                }
+                
+                if(curr->getRight() != nullptr){
+                    middleright->setMiddleLeft(curr->getRight());
+                    curr->getRight()->setParent(middleright);
+                }
+
+                Split(curr->getParent());
+
+            }
+        }    
+    }
+
 
     //Find an element in the index
     int Find(shared_ptr<string> strptr){
@@ -306,14 +330,24 @@ public:
     //Remove an element from the index
     void Remove(shared_ptr<string> str);
 
+    //Get root ptr
+    shared_ptr<Node> getRoot(){
+        return root;
+    }
+
     //Print travserse, visit the key
     void Print(){
         PrintHelp(root);
+        // if(root->getRight()->getSmallKey() != nullptr){
+        //     cout << root->getRight()->getSmallKey()->getKey() << endl;
+        // }
+        
     }
 
     //Print Help
     void PrintHelp(shared_ptr<Node> curr){
         if(curr == nullptr){
+            cout << "ITS EMPTY" << endl;
             return;
         }
 
@@ -405,14 +439,14 @@ public:
     }
 
     //split with no parent (A B C)
-    shared_ptr<Node> SplitWithNoParent(shared_ptr<Node> curr){
+    shared_ptr<Node> SplitWithNoParent(shared_ptr<Node>& curr){
         shared_ptr<Node> left, top, right;  
         left = make_shared<Node>(curr->getSmallKey());
-        cout << curr->getSmallKey()->getKey() << endl;
+        //cout << curr->getSmallKey()->getKey() << endl;
         top = make_shared<Node>(curr->getMiddleKey());
-        cout << curr->getMiddleKey()->getKey() << endl;
+        //cout << curr->getMiddleKey()->getKey() << endl;
         right = make_shared<Node>(curr->getLargeKey());
-        cout << curr->getLargeKey()->getKey() << endl;
+        //cout << curr->getLargeKey()->getKey() << endl;
 
 
         top->setLeft(left);
@@ -444,13 +478,20 @@ public:
         return top;
     }
 
-    //split with parent (left)
-    shared_ptr<Node> SplitWithParentLeft(shared_ptr<Node> curr){
+    //split with parent (left) twonode
+    shared_ptr<Node> SplitWithParentLeftTwoNode(shared_ptr<Node> curr){
         shared_ptr<Node> left = make_shared<Node>(curr->getSmallKey());
         shared_ptr<Node> middleleft = make_shared<Node>(curr->getLargeKey());
 
+        //left
         curr->getParent()->setLeft(left);
         left->setParent(curr->getParent());
+
+        // in case parent has midleft childern -> move to right
+        if(curr->getParent()->getMiddleLeft() != nullptr){
+            curr->getParent()->setRight(curr->getParent()->getMiddleLeft());
+        }
+
         curr->getParent()->setMiddleLeft(middleleft);
         middleleft->setParent(curr->getParent());
 
@@ -476,6 +517,49 @@ public:
         
         return curr->getParent();
 }
+
+    //split with parent (left) threenode
+    shared_ptr<Node> SplitWithParentLeftThreeNode(shared_ptr<Node> curr){
+        shared_ptr<Node> left = make_shared<Node>(curr->getSmallKey());
+        shared_ptr<Node> middleleft = make_shared<Node>(curr->getLargeKey());
+
+        //left
+        curr->getParent()->setLeft(left);
+        left->setParent(curr->getParent());
+
+        // in case parent has midleft childern -> move to midright
+        if(curr->getParent()->getMiddleLeft() != nullptr){
+            curr->getParent()->setMiddleRight(curr->getParent()->getMiddleLeft());
+        }
+
+        // in case parent has right childern -> move to midright
+        // nothing
+        
+        curr->getParent()->setMiddleLeft(middleleft);
+        middleleft->setParent(curr->getParent());
+
+        if(curr->getLeft() != nullptr){
+            left->setLeft(curr->getLeft());
+            curr->getLeft()->setParent(left);
+        }
+
+        if(curr->getMiddleLeft() != nullptr){
+            left->setMiddleLeft(curr->getMiddleLeft());
+            curr->getMiddleLeft()->setParent(left);
+        }
+
+        if(curr->getMiddleRight() != nullptr){
+            middleleft->setLeft(curr->getMiddleRight());
+            curr->getMiddleLeft()->setParent(middleleft);
+        }
+
+        if(curr->getRight() != nullptr){
+            middleleft->setMiddleLeft(curr->getRight());
+            curr->getRight()->setParent(middleleft);
+        }
+        
+        return curr->getParent();
+    }
 
     //split with parent (right) twonode
      shared_ptr<Node> SplitWithParentRightTwoNode(shared_ptr<Node> curr){

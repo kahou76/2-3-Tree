@@ -57,6 +57,19 @@ public:
     }
 
 
+    //default constructor
+    Node(){
+        left = nullptr;
+        middleleft = nullptr;
+        middleright = nullptr;
+        right = nullptr;
+        parent = nullptr;
+        smallkey = nullptr;;
+        middlekey = nullptr;
+        largekey = nullptr;
+    }
+
+
 
     ~Node(){}
 
