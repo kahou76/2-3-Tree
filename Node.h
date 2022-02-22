@@ -13,12 +13,7 @@ private:
     shared_ptr<Node> middleright;
     shared_ptr<Node> right;
     shared_ptr<Node> parent;
-    // string smallstr;
-    // string largestr;
-    // string extrastr;
-    // int smallval;
-    // int largeval;
-    // int extraval;
+
     shared_ptr<Key> smallkey;
     shared_ptr<Key> middlekey;
     shared_ptr<Key> largekey;
