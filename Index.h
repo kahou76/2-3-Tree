@@ -30,16 +30,19 @@ public:
         //same key same val
         if(Find(strptr) == val){
             cout << "same key with same val already inserted" << endl;
+        }else{
+            InsertHelp(root,strptr,val);
+        }
 
         //same key diff val -> replace the key with new val
-        }else if(Find(strptr) != -99 && Find(strptr) != val){
-            InsertHelp(root,strptr,val);
-        }
+        // else if(Find(strptr) != -99 && Find(strptr) != val){
+            // InsertHelp(root,strptr,val);
+        // }
         
         //diff key with same val or diff val
-        else if(Find(strptr) == -99){
-            InsertHelp(root,strptr,val);
-        }
+        // else if(Find(strptr) == -99){
+        //     InsertHelp(root,strptr,val);
+        // }
 
         //InsertHelp(root,strptr,val);
         
@@ -336,111 +339,25 @@ public:
 
     //Remove an element from the index
     void Remove(shared_ptr<string> strptr){
+        if(Find(strptr) == -1){
+            return;
+        }
+
         //Search the key strptr and delele it
         string str = *strptr;
         //Base
         if(root == nullptr){
             //return -99;
+            return;
         }
 
         shared_ptr<Node> curr = root;
         while(curr != nullptr){
 
         //if leaf
-        if(curr->getLeft() == nullptr && curr->getMiddleLeft() == nullptr && curr->getMiddleRight() == nullptr  && curr->getRight() == nullptr){
-            if(IfTwoNode(curr)){
-                //two node
-                if(str.compare(curr->getSmallKey()->getKey()) == 0){
-                    //return curr->getSmallKey()->getValue();
-                    //Check if parent are two node or three node
-
-                    //If parent is threenode
-                    if(IfThreeNode(curr->getParent())){
-                        //either get from right or left (A B) when they are three node 
-                        // left
-                        if(curr->getParent()->getLeft() == curr){
-                            //middle first 
-                            if(IfThreeNode(curr->getParent()->getMiddleLeft())){
-                                curr->setSmallKey( curr->getParent()->getSmallKey());
-                                curr->getParent()->setSmallKey(curr->getParent()->getMiddleLeft()->getSmallKey());
-                                curr->getParent()->getMiddleLeft()->setSmallKey(curr->getParent()->getMiddleLeft()->getMiddleKey());
-                                curr->getParent()->getMiddleLeft()->setMiddleKey(nullptr);
-                            }
-                            //then right
-                            // all children are twonode
-                            // same situation
-                            else{
-                                curr->setSmallKey(curr->getParent()->getSmallKey());
-                                curr->getParent()->setSmallKey(curr->getParent()->getMiddleKey());
-                                curr->getParent()->setMiddleKey(nullptr);
-                                curr->setMiddleKey(curr->getParent()->getMiddleLeft()->getSmallKey());
-                                curr->getParent()->setMiddleLeft(curr->getParent()->getRight());
-                                curr->getParent()->setRight(nullptr);
-                                
-                            }               
-                        }
-                        // mid
-                        if(curr->getParent()->getMiddleLeft() == curr){
-                            //right first
-                            if(IfThreeNode(curr->getParent()->getRight())){
-                                curr->setSmallKey(curr->getParent()->getMiddleKey());
-                                curr->getParent()->setMiddleKey(curr->getParent()->getRight()->getSmallKey());
-                                curr->getParent()->getRight()->setSmallKey(curr->getParent()->getRight()->getMiddleKey());
-                                curr->getParent()->getRight()->setMiddleKey(nullptr);
-                            }
-                            // then left
-                            else if(IfThreeNode(curr->getParent()->getLeft())){
-                                curr->setSmallKey(curr->getParent()->getSmallKey());
-                                curr->getParent()->setSmallKey(curr->getParent()->getLeft()->getMiddleKey());
-                                curr->getParent()->getLeft()->setMiddleKey(nullptr);     
-                            }
-                            // then all children are twonode (A)
-                            // move the parent mid key to right node
-                            else{
-                                curr->getParent()->getMiddleLeft()->setMiddleKey(curr->getParent()->getRight()->getSmallKey());
-                                curr->getParent()->getMiddleLeft()->setSmallKey(curr->getParent()->getMiddleKey());
-                                curr->getParent()->setMiddleKey(nullptr);
-                            }
-                        }
-                        // right
-                        if(curr->getParent()->getRight() == curr){
-                            //if middle is threenode
-                            if(IfThreeNode(curr->getParent()->getMiddleLeft())){
-                                curr->setSmallKey(curr->getParent()->getMiddleKey());
-                                curr->getParent()->setMiddleKey(curr->getParent()->getMiddleLeft()->getMiddleKey());
-                                curr->getParent()->getMiddleLeft()->setSmallKey(curr->getParent()->getMiddleLeft()->getMiddleKey());
-                                curr->getParent()->getMiddleLeft()->setMiddleKey(nullptr);
-                            }
-                            
-                            //else parent merge into two node
-                            else{
-                                curr->getParent()->getMiddleLeft()->setMiddleKey(curr->getParent()->getMiddleKey());
-                                curr->getParent()->setMiddleKey(nullptr);
-                                curr->getParent()->setRight(nullptr);
-                                
-                            }
-                        }
-                    }
-                    else{
-                    //Parent is two node
-
-                    }
-
-                }
-            }else{
-                //three
-                if(str.compare(curr->getSmallKey()->getKey()) == 0){//small
-                    //return curr->getSmallKey()->getValue();
-                    curr->setSmallKey(curr->getMiddleKey());
-                    curr->setMiddleKey(nullptr);
-                    break;
-                }else if(str.compare(curr->getMiddleKey()->getKey()) == 0){//large
-                    //return curr->getMiddleKey()->getValue();
-                    curr->setMiddleKey(nullptr);
-                    break;
-                }
-
-            }
+        if(Ifleaf(curr)){
+            DeleteLeaf(curr,str);
+            break;
         }
 
         //If internal Node:
@@ -448,7 +365,9 @@ public:
         else if(IfTwoNode(curr)){
 
             if(str.compare(curr->getSmallKey()->getKey()) == 0){
-                //return curr->getSmallKey()->getValue();
+                //replace curr with two node
+                ReplaceTwoNode(curr);
+                break;
             }
 
             else if(str.compare(curr->getSmallKey()->getKey()) < 0){
@@ -462,6 +381,8 @@ public:
         }else{//three with children
             if(str.compare(curr->getSmallKey()->getKey()) == 0){
                 //return curr->getSmallKey()->getValue();
+                ReplaceThreeNodeSmall(curr);
+                break;
             }
 
             else if(str.compare(curr->getSmallKey()->getKey()) < 0){
@@ -471,6 +392,8 @@ public:
 
             else if(str.compare(curr->getMiddleKey()->getKey()) == 0){
                 //return curr->getMiddleKey()->getValue();
+                ReplaceThreeNodeMid(curr);
+                break;
             }
 
             else if(str.compare(curr->getSmallKey()->getKey()) > 0 && str.compare(curr->getMiddleKey()->getKey()) < 0){
@@ -491,6 +414,601 @@ public:
         //cout << "test: " << root->getSmallKey()->getKey() << endl;
         //return -1;
     }
+
+    //Restructure Left Leaf
+    void RestructureLeftNodeLeaf(shared_ptr<Node>& curr){
+
+        //middle friend has three node
+        if(IfThreeNode(curr->getParent()->getMiddleLeft())){
+            curr->setSmallKey( curr->getParent()->getSmallKey());
+            curr->getParent()->setSmallKey(curr->getParent()->getMiddleLeft()->getSmallKey());
+            curr->getParent()->getMiddleLeft()->setSmallKey(curr->getParent()->getMiddleLeft()->getMiddleKey());
+            curr->getParent()->getMiddleLeft()->setMiddleKey(nullptr);
+
+            if(!Ifleaf(curr)){
+                //connect all bottom lines
+                //from Merge Left
+                if(curr->getLeft() != nullptr && curr->getSmallKey() == nullptr){
+                    //curr->setLeft(curr->getMiddleLeft());
+                    curr->setMiddleLeft(curr->getParent()->getMiddleLeft()->getLeft());
+                    curr->getParent()->getMiddleLeft()->setLeft(curr->getParent()->getMiddleLeft()->getMiddleLeft());
+                    curr->getParent()->getMiddleLeft()->setMiddleLeft(curr->getParent()->getMiddleLeft()->getRight());
+                    curr->getParent()->getMiddleLeft()->setRight(nullptr);
+                    //done
+                }
+
+
+                // //from Merge Midleft
+                // if(curr->getMiddleLeft() != nullptr){
+                //     curr->setLeft(curr->getMiddleLeft());
+                //     curr->setMiddleLeft(curr->getParent()->getMiddleLeft()->getLeft());
+                //     curr->getParent()->getMiddleLeft()->setLeft(curr->getParent()->getMiddleLeft()->getMiddleLeft());
+                //     curr->getParent()->getMiddleLeft()->setMiddleLeft(curr->getParent()->getMiddleLeft()->getRight());
+                //     curr->getParent()->getMiddleLeft()->setRight(nullptr);
+                //     //done
+                // }
+                
+            }
+            
+        }
+
+        //pull the parent key down
+        else { 
+            curr->setSmallKey(curr->getParent()->getSmallKey());
+            curr->getParent()->setSmallKey(curr->getParent()->getMiddleKey());
+            curr->getParent()->setMiddleKey(nullptr);
+            curr->setMiddleKey(curr->getParent()->getMiddleLeft()->getSmallKey());
+            
+            if(!Ifleaf(curr)){
+                //connect all bottom lines
+                //from Merge Left
+                if(curr->getLeft() != nullptr && curr->getSmallKey() == nullptr){
+                    curr->setMiddleLeft(curr->getParent()->getMiddleLeft()->getLeft());
+                    curr->setRight(curr->getParent()->getMiddleLeft()->getMiddleLeft());
+                    // curr->getParent()->setMiddleLeft(curr->getParent()->getRight());
+                    // curr->getParent()->setRight(nullptr);
+                    //done
+                    
+                }
+                // //from Merge Right
+                // if(curr->getMiddleLeft() != nullptr){
+                //     curr->setleft(curr->getMiddleLeft());
+                //     curr->setMiddleLeft(curr->getParent()->getMiddleLeft()->getLeft());
+                //     curr->setRight(curr->getParent()->getMiddleLeft()->getMiddleLeft());
+                //     // curr->getParent()->setMiddleLeft(curr->getParent()->getRight());
+                //     // curr->getParent()->setRight(nullptr);
+                //     //done
+
+                // }
+            }
+
+            curr->getParent()->setMiddleLeft(curr->getParent()->getRight());
+            curr->getParent()->setRight(nullptr);
+        }
+
+        
+
+        //middle first friend is two node, but parent is threenode
+        // else if(curr->getSmallKey() == nullptr && curr->getMiddleLeft() != nullptr && IfThreeNode(curr->getParent())){
+        //     curr->getParent()->getMiddleLeft()->setMiddleKey(curr->getParent()->getMiddleLeft()->getSmallKey());
+        //     curr->getParent()->getMiddleLeft()->setSmallKey(curr->getParent()->getSmallKey());
+        //     curr->getParent()->setSmallKey(curr->getParent()->getMiddleKey());
+        //     curr->getParent()->setMiddleKey(nullptr);
+        //     curr->getParent()->getMiddleLeft()->setRight(curr->getParent()->getMiddleLeft()->getMiddleLeft());
+        //     curr->getParent()->getMiddleLeft()->setMiddleLeft(curr->getParent()->getMiddleLeft()->getLeft());
+        //     curr->getParent()->getMiddleLeft()->setLeft(curr->getMiddleLeft());
+        //     curr = curr->getParent();
+        //     curr->setLeft(curr->getMiddleLeft());
+        //     curr->setMiddleLeft(curr->getRight());
+        //     curr->setRight(nullptr);
+            
+        // }
+    }
+
+    //Restructure Middle Leaf
+    void RestructureMiddleNodeLeaf(shared_ptr<Node>& curr){
+        //right first
+        if(IfThreeNode(curr->getParent()->getRight())){
+            curr->setSmallKey(curr->getParent()->getMiddleKey());
+            curr->getParent()->setMiddleKey(curr->getParent()->getRight()->getSmallKey());
+            curr->getParent()->getRight()->setSmallKey(curr->getParent()->getRight()->getMiddleKey());
+            curr->getParent()->getRight()->setMiddleKey(nullptr);
+            if(!Ifleaf(curr)){
+                if(curr->getLeft() != nullptr && curr->getSmallKey() == nullptr){
+                    curr->setMiddleLeft(curr->getParent()->getRight()->getLeft());
+                    curr = curr->getParent()->getRight();
+                    curr->setLeft(curr->getMiddleLeft());
+                    curr->setMiddleLeft(curr->getRight());
+                    curr->setRight(nullptr);
+                    //done
+                }
+            }
+        }
+        // then left
+        else if(IfThreeNode(curr->getParent()->getLeft())){
+            curr->setSmallKey(curr->getParent()->getSmallKey());
+            curr->getParent()->setSmallKey(curr->getParent()->getLeft()->getMiddleKey());
+            curr->getParent()->getLeft()->setMiddleKey(nullptr);  
+            if(!Ifleaf(curr)){
+                if(curr->getLeft() != nullptr && curr->getSmallKey() == nullptr){
+                    curr->setMiddleLeft(curr->getLeft());
+                    curr->setLeft(curr->getParent()->getLeft()->getRight());
+                    curr = curr->getParent()->getLeft();
+                    curr->setRight(nullptr);
+                }
+            }
+        }
+        // then all children are twonode (A)
+        // move the parent mid key to right node
+        else{
+            curr->getParent()->getMiddleLeft()->setMiddleKey(curr->getParent()->getRight()->getSmallKey());
+            curr->getParent()->getMiddleLeft()->setSmallKey(curr->getParent()->getMiddleKey());
+            curr->getParent()->setMiddleKey(nullptr);
+            if(!Ifleaf(curr)){
+                if(curr->getLeft() != nullptr && curr->getSmallKey() == nullptr){
+                    curr->setMiddleLeft(curr->getParent()->getRight()->getLeft());
+                    curr->setRight(curr->getParent()->getRight()->getMiddleLeft());
+                }
+            }
+            curr->getParent()->setRight(nullptr);
+           
+        }
+    }
+
+    //Restructure Right Leaf
+    void RestructureRightNodeLeaf(shared_ptr<Node>& curr){
+        //if middle is threenode
+        if(IfThreeNode(curr->getParent()->getMiddleLeft())){
+            curr->setSmallKey(curr->getParent()->getMiddleKey());
+            curr->getParent()->setMiddleKey(curr->getParent()->getMiddleLeft()->getMiddleKey());
+            curr->getParent()->getMiddleLeft()->setSmallKey(curr->getParent()->getMiddleLeft()->getMiddleKey());
+            curr->getParent()->getMiddleLeft()->setMiddleKey(nullptr);
+            if(!Ifleaf(curr)){
+                if(curr->getLeft() != nullptr && curr->getSmallKey() == nullptr){
+                    curr->setMiddleLeft(curr->getLeft());
+                    curr->setLeft(curr->getParent()->getMiddleLeft()->getRight());
+                    curr->getParent()->getMiddleLeft()->setRight(nullptr);
+                }
+            }
+            //break;
+        }
+        
+        //else parent merge into two node
+        else{
+            curr->getParent()->getMiddleLeft()->setMiddleKey(curr->getParent()->getMiddleKey());
+            curr->getParent()->setMiddleKey(nullptr);
+            if(!Ifleaf(curr)){
+                if(curr->getLeft() != nullptr && curr->getSmallKey() == nullptr){
+                    curr->getParent()->getMiddleLeft()->setRight(curr->getLeft());
+                }
+            }
+                
+            curr->getParent()->setRight(nullptr);
+
+            //break;
+            
+        }
+    }
+
+    //Restructure 
+    void Restructure(shared_ptr<Node>& curr){
+        // left
+        if(curr->getParent()->getLeft() == curr){
+            RestructureLeftNodeLeaf(curr);            
+        }
+        // mid
+        else if(curr->getParent()->getMiddleLeft() == curr){
+            RestructureMiddleNodeLeaf(curr);
+        }
+        // right
+        else if(curr->getParent()->getRight() == curr){
+            RestructureRightNodeLeaf(curr);
+        }
+    }
+
+    //Delete Leaf
+    //curr taking the leaf node
+    void DeleteLeaf(shared_ptr<Node>& curr,string str){
+        //delete leaf
+            if(IfTwoNode(curr)){
+                //two node
+                if(str.compare(curr->getSmallKey()->getKey()) == 0){
+                    //return curr->getSmallKey()->getValue();
+                    //Check if parent are two node or three node
+
+                    //If parent is threenode
+                    if(IfThreeNode(curr->getParent())){
+                        Restructure(curr);
+                        
+                    }
+                    //Parent is two node
+                    else
+                    {
+                        //delete MiddleLeft
+                        if(curr->getParent()->getMiddleLeft() == curr){
+                            RedistributeRight(curr);
+                            //break;
+                            
+                        }
+                        //delete left
+                        else if(curr->getParent()->getLeft() == curr){
+                            RedistributeLeft(curr);
+                            // // if it friend is threenode (A B): only refactoring the small part
+                            // if(IfThreeNode(curr->getParent()->getMiddleLeft())){
+                            //     curr->setSmallKey(curr->getParent()->getSmallKey());
+                            //     curr->getParent()->setSmallKey(curr->getParent()->getMiddleLeft()->getSmallKey());
+                            //     curr->getParent()->getMiddleLeft()->setSmallKey(curr->getParent()->getMiddleLeft()->getMiddleKey());
+                            //     curr->getParent()->getMiddleLeft()->setMiddleKey(nullptr);
+                            //     //break;
+                            // }
+
+                            // // if not: look for parent parent help
+                            // else{
+                            //     //join the right node
+
+                            // }
+                        }
+                        
+                        
+                    
+                    // worst case: all node is two node
+
+                    }
+
+                }
+            }else{
+                //three
+                if(str.compare(curr->getSmallKey()->getKey()) == 0){//small
+                    //return curr->getSmallKey()->getValue();
+                    curr->setSmallKey(curr->getMiddleKey());
+                    curr->setMiddleKey(nullptr);
+                    //break;
+                }else if(str.compare(curr->getMiddleKey()->getKey()) == 0){//large
+                    //return curr->getMiddleKey()->getValue();
+                    curr->setMiddleKey(nullptr);
+                    //break;
+                }
+
+            }
+    }
+
+    //If leaf
+    bool Ifleaf(shared_ptr<Node> curr){
+        return curr->getLeft() == nullptr && curr->getMiddleLeft() == nullptr && curr->getMiddleRight() == nullptr  && curr->getRight() == nullptr;
+    }
+
+        //Redistribute Left
+    void RedistributeLeft(shared_ptr<Node>& curr){
+        // if it friend is threenode (A B): only refactoring the small part
+        // if leaf 
+        if(Ifleaf(curr)){
+            
+            //if the midleft is threenode
+            if(IfThreeNode(curr->getParent()->getMiddleLeft())){
+            
+                curr->setSmallKey(curr->getParent()->getSmallKey());
+                curr->getParent()->setSmallKey(curr->getParent()->getMiddleLeft()->getSmallKey());
+                curr->getParent()->getMiddleLeft()->setSmallKey(curr->getParent()->getMiddleLeft()->getMiddleKey());
+                curr->getParent()->getMiddleLeft()->setMiddleKey(nullptr);
+            }
+
+            // if not: look for parent parent help
+            // join the bottom node with parent node
+            // then delete parent node for internal node
+            else{
+                //join the left node
+                Merge(curr);
+
+            }
+        }
+
+        //not leaf but internal node
+        //not matter parent is two or threenode, just redistribute the small key
+        else if(curr->getSmallKey() == nullptr && curr->getLeft() != nullptr){
+            //if right is threenode
+            // and if parent is twonode only
+            if(IfTwoNode(curr->getParent())){
+                if(IfThreeNode(curr->getParent()->getMiddleLeft())){
+                curr->setSmallKey(curr->getParent()->getSmallKey());
+                curr->getParent()->setSmallKey(curr->getParent()->getMiddleLeft()->getSmallKey());
+                curr->getParent()->getMiddleLeft()->setSmallKey(curr->getParent()->getMiddleLeft()->getMiddleKey());
+                curr->getParent()->getMiddleLeft()->setMiddleKey(nullptr);
+
+                //curr->setLeft(curr->getLeft());
+                curr->setMiddleLeft(curr->getParent()->getMiddleLeft()->getLeft());
+                curr->getParent()->getMiddleLeft()->setLeft(curr->getParent()->getMiddleLeft()->getMiddleLeft());
+                curr->getParent()->getMiddleLeft()->setMiddleLeft(curr->getParent()->getMiddleLeft()->getRight());
+                curr->getParent()->getMiddleLeft()->setRight(nullptr);
+                }
+
+                else{
+                    Merge(curr);
+                }
+            }
+
+            
+        }
+
+    }
+
+
+    //Redistribute Right
+    void RedistributeRight(shared_ptr<Node>& curr){
+        // if it friend is threenode (A B): only refactoring the small part
+        // if leaf 
+        if(Ifleaf(curr)){
+            //if left is threenode
+            if(IfThreeNode(curr->getParent()->getLeft())){
+            
+                curr->setSmallKey(curr->getParent()->getSmallKey());
+                curr->getParent()->setSmallKey(curr->getParent()->getLeft()->getMiddleKey());
+                curr->getParent()->getLeft()->setMiddleKey(nullptr);
+            }
+
+            // if not: look for parent parent help
+            // join the bottom node with parent node
+            // then delete parent node for internal node
+            else{
+                //join the left node
+                Merge(curr);
+
+            }
+        }
+
+        //not leaf but internal node
+        //not matter parent is two or threenode, just redistribute the small key
+        else if(curr->getSmallKey() == nullptr && curr->getLeft() != nullptr){
+            //parent is two node only
+            //if left is threenode
+            if(IfThreeNode(curr->getParent()->getLeft()) && IfTwoNode(curr->getParent())){
+                curr->setSmallKey(curr->getParent()->getSmallKey());
+                curr->getParent()->setSmallKey(curr->getParent()->getLeft()->getMiddleKey());
+                curr->getParent()->getLeft()->setMiddleKey(nullptr);
+                curr->setMiddleLeft(curr->getLeft());
+                curr->setLeft(curr->getParent()->getLeft()->getRight());
+                
+            }
+
+            else{
+                Merge(curr);
+            }
+        }
+
+
+    }
+
+    // Merge to Left node
+    void Merge(shared_ptr<Node>& curr){
+        if(curr->getParent()->getMiddleLeft() == curr){
+            curr->getParent()->getLeft()->setMiddleKey(curr->getParent()->getSmallKey());
+            curr->getParent()->setSmallKey(nullptr);
+              
+        }
+
+        else if(curr->getParent()->getLeft() == curr){
+            curr->setSmallKey(curr->getParent()->getSmallKey());
+            curr->setMiddleKey(curr->getParent()->getMiddleLeft()->getSmallKey());
+        }
+
+        curr = curr->getParent();
+        curr->setMiddleLeft(nullptr);      
+        //time to separate the direction:
+        //if parent is two node
+        if(IfTwoNode(curr->getParent())){
+            //if curr is stored on right
+            if(curr->getParent()->getMiddleLeft() == curr){
+                RedistributeRight(curr);
+            }
+            //if curr is stored on left
+            else if(curr->getParent()->getLeft() == curr){
+                RedistributeLeft(curr);
+            }
+        }
+            
+        //if parent is three node
+        else if(IfThreeNode(curr->getParent())){
+            //go ahead and use Restructure
+            Restructure(curr);
+            //done
+        }
+
+        //If parent is nullptr, which means reaching the root aleady
+        //Base case
+        else if(curr->getParent() == nullptr && curr->getSmallKey() == nullptr && curr->getLeft() != nullptr){
+            curr = curr->getLeft();
+            curr->setParent(nullptr);
+            root = curr;
+        }
+
+    }
+        // else if(curr->getLeft() != nullptr){
+        //     //two situation:
+        //     //parent twonode
+        //     if(IfTwoNode(curr->getParent())){
+        //         curr->getParent()->getLeft()->setMiddleKey(curr->getParent()->getSmallKey());
+        //         curr->getParent()->getLeft()->setRight(curr->getLeft());
+        //         curr = curr->getParent();
+        //         curr->setMiddleLeft(nullptr);
+        //         curr->setSmallKey(nullptr);
+        //         RedistributeRight(curr);
+        //     }
+            
+        //     //parent threenode
+        //     else if(IfThreeNode(curr->getParent())){
+        //         //two situation:
+        //         //node is middle left
+        //         if(curr->getParent()->getMiddleLeft() == curr){
+        //             curr->getParent()->getLeft()->setMiddleKey(curr->getParent()->getSmallKey());
+        //             curr->getParent()->getLeft()->setRight(curr->getLeft());
+        //             curr = curr->getParent();
+        //             curr->setSmallKey(curr->getMiddleKey());
+        //             curr->setMiddleKey(nullptr);
+        //         }
+                
+        //         //node is right
+        //         else if(curr->getParent()->getRight() == curr){
+
+        //         }
+        //     }
+            
+            
+            
+        // }
+    
+
+    //Merge to Right node
+    // void MergetoRight(shared_ptr<Node>& curr){
+    //     if(curr->getMiddleLeft() == nullptr){
+    //         curr->getParent()->getMiddleLeft()->setMiddleKey(curr->getParent()->getMiddleLeft()->getSmallKey());
+    //         curr->getParent()->getMiddleLeft()->setSmallKey(curr->getParent()->getSmallKey());
+    //         curr->getParent()->setSmallKey(nullptr);
+    //         curr = curr->getParent();
+    //         curr->setLeft(nullptr);
+    //         RedistributeLeft(curr);
+            
+    //     }
+
+    //     else if(curr->getMiddleLeft() != nullptr){
+    //         curr->getParent()->getMiddleLeft()->setMiddleKey(curr->getParent()->getMiddleLeft()->getSmallKey());
+    //         curr->getParent()->getMiddleLeft()->setSmallKey(curr->getParent()->getSmallKey());
+
+    //         curr->getParent()->getMiddleLeft()->setRight(curr->getParent()->getMiddleLeft()->getMiddleLeft());
+    //         curr->getParent()->getMiddleLeft()->setMiddleLeft(curr->getParent()->getMiddleLeft()->getLeft());
+    //         curr->getParent()->getMiddleLeft()->setLeft(curr->getMiddleLeft());
+
+    //         curr = curr->getParent();
+    //         curr->setLeft(nullptr);
+    //         curr->setSmallKey(nullptr);
+    //         RedistributeLeft(curr);
+    //         //curr->getParent()->setMiddleLeft(nullptr);
+    //     }
+    // }
+
+
+    
+
+
+
+    //Replace with curr two node
+    void ReplaceTwoNode(shared_ptr<Node>& curr){
+        //return curr->getSmallKey()->getValue();
+        shared_ptr<Node> midleft = curr->getMiddleLeft();
+        shared_ptr<Node> left = curr->getLeft();
+        shared_ptr<Node>& min = FindMin(midleft);
+        shared_ptr<Node>& max = FindMax(left);
+        if(IfThreeNode(min)){
+            curr->setSmallKey(min->getSmallKey());
+            DeleteLeaf(min,min->getSmallKey()->getKey());
+            //break;
+        }else if(IfThreeNode(max)){
+            curr->setSmallKey(max->getMiddleKey());
+            DeleteLeaf(max,max->getMiddleKey()->getKey());
+            //break;
+        }else{
+            //all min and max are two node
+            curr->setSmallKey(min->getSmallKey());
+            DeleteLeaf(min,min->getSmallKey()->getKey());
+            //break;
+        }
+    }
+
+    //Replace with curr three node small key
+    void ReplaceThreeNodeSmall(shared_ptr<Node>& curr){
+        //return curr->getSmallKey()->getValue();
+        shared_ptr<Node> right = curr->getRight();
+        shared_ptr<Node> left = curr->getLeft();
+        shared_ptr<Node>& min = FindMin(right);
+        shared_ptr<Node>& max = FindMax(left);
+        if(IfThreeNode(min)){
+            curr->setSmallKey(min->getSmallKey());
+            DeleteLeaf(min,min->getSmallKey()->getKey());
+            //break;
+        }else if(IfThreeNode(max)){
+            curr->setSmallKey(max->getMiddleKey());
+            DeleteLeaf(max,max->getMiddleKey()->getKey());
+            //break;
+        }else{
+            //all min and max are two node
+            curr->setSmallKey(min->getSmallKey());
+            DeleteLeaf(min,min->getSmallKey()->getKey());
+            //break;
+        }
+    }
+
+    //Replace with curr three node
+    void ReplaceThreeNodeMid(shared_ptr<Node>& curr){
+        //return curr->getSmallKey()->getValue();
+        shared_ptr<Node> right = curr->getRight();
+        shared_ptr<Node> left = curr->getLeft();
+        shared_ptr<Node>& min = FindMin(right);
+        shared_ptr<Node>& max = FindMax(left);
+        if(IfThreeNode(min)){
+            curr->setMiddleKey(min->getSmallKey());
+            DeleteLeaf(min,min->getSmallKey()->getKey());
+            //break;
+        }else if(IfThreeNode(max)){
+            curr->setMiddleKey(max->getMiddleKey());
+            DeleteLeaf(max,max->getMiddleKey()->getKey());
+            //break;
+        }else{
+            //all min and max are two node
+            curr->setMiddleKey(min->getSmallKey());
+            DeleteLeaf(min,min->getSmallKey()->getKey());
+            //break;
+        }
+    }
+
+    //Find Min 
+    shared_ptr<Node>& FindMin(shared_ptr<Node>& curr){
+        if(curr == nullptr){
+            throw "Min value not found";
+        }
+        
+        while(curr->getLeft() != nullptr){
+            // if(curr->getLeft() == nullptr){
+            //     return curr;
+            //     break;
+            // }else{
+                //return this->FindMin(curr->getLeft());
+                curr = curr->getLeft();
+            // }
+
+        }
+        return curr;
+         
+    }
+
+    //Find Max 
+    shared_ptr<Node>& FindMax(shared_ptr<Node>& curr) {
+        if(curr == nullptr){
+            throw "Max value not found";
+        }
+        
+        while(curr->getMiddleLeft() != nullptr){
+            if(IfThreeNode(curr)){
+                if(curr->getRight() == nullptr){
+                    return curr;
+                    break;
+                }else{
+                    //return this->FindMax(curr->getRight());
+                    curr = curr->getRight();
+                }
+            }else if(IfTwoNode(curr)){
+                if(curr->getMiddleLeft() == nullptr){
+                    return curr;
+                    break;
+                }else{
+                    //return FindMax(curr->getMiddleLeft());
+                    curr = curr->getMiddleLeft();
+                }
+            }
+        }
+        
+        cout << "findMax: never approve this message " << endl;
+        return curr;
+        //return nullptr;
+    }
+
 
     //Get root ptr
     shared_ptr<Node> getRoot(){
