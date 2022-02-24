@@ -1,32 +1,13 @@
-#pragma once
-#include<iostream>
-#include<memory>
-#include<queue>
-#include<string>
-#include "Node.h"
+#include "Index.h"
 
-using namespace std;
-
-class Index{
-private:
-    shared_ptr<Node> root;
-
-public:
-
-    //public constructor
-    Index(){
+//public constructor
+    Index::Index(){
         root = nullptr;
     }
 
-    //greater
-    struct greater{
-        bool operator()( shared_ptr<Key> l, shared_ptr<Key> r ){
-            return l->getKey() > r->getKey();
-        }
-    };
 
     //Insert an element in the index, associate the integer value with the element
-    void Insert(shared_ptr<string> strptr, int val){
+    void Index::Insert(shared_ptr<string> strptr, int val){
         //same key same val
         if(Find(strptr) == val){
             // cout << "same key with same val already inserted" << endl;
@@ -39,7 +20,7 @@ public:
     }
 
     //Insert help
-    void InsertHelp(shared_ptr<Node> curr, shared_ptr<string> strptr, int val){
+    void Index::InsertHelp(shared_ptr<Node> curr, shared_ptr<string> strptr, int val){
         string str = *strptr;
         //Node newnode = Node(*strptr,val);
         Key newkey = Key(*strptr,val);
@@ -121,7 +102,7 @@ public:
     }
 
     //Split Main Function
-    void Split(shared_ptr<Node> curr){
+    void Index::Split(shared_ptr<Node> curr){
         //START SPLITING
         //if parent is null
         if(curr->getParent() == nullptr){
@@ -216,12 +197,12 @@ public:
 
 
     //Find an element in the index
-    int Find(shared_ptr<string> strptr){
+    int Index::Find(shared_ptr<string> strptr){
         return FindHelp(root,strptr);
     }
 
     //Find Help
-    int FindHelp(shared_ptr<Node> curr, shared_ptr<string> strptr){
+    int Index::FindHelp(shared_ptr<Node> curr, shared_ptr<string> strptr){
         string str = *strptr;
         //Base
         if(curr == nullptr){
@@ -292,7 +273,7 @@ public:
 
 
     //Remove an element from the index
-    void Remove(shared_ptr<string> strptr){
+    void Index::Remove(shared_ptr<string> strptr){
         //If cant find, return
         if(Find(strptr) == -1){
             
@@ -375,7 +356,7 @@ public:
     }
 
     //Restructure Left Leaf
-    void RestructureLeftNodeLeaf(shared_ptr<Node>& curr){
+    void Index::RestructureLeftNodeLeaf(shared_ptr<Node>& curr){
 
         //middle friend has three node
         if(IfThreeNode(curr->getParent()->getMiddleLeft())){
@@ -435,7 +416,7 @@ public:
     }
 
     //Restructure Middle Leaf
-    void RestructureMiddleNodeLeaf(shared_ptr<Node>& curr){
+    void Index::RestructureMiddleNodeLeaf(shared_ptr<Node>& curr){
         //right first
         if(IfThreeNode(curr->getParent()->getRight())){
             curr->setSmallKey(curr->getParent()->getMiddleKey());
@@ -487,7 +468,7 @@ public:
     }
 
     //Restructure Right Leaf
-    void RestructureRightNodeLeaf(shared_ptr<Node>& curr){
+    void Index::RestructureRightNodeLeaf(shared_ptr<Node>& curr){
         //if middle is threenode
         if(IfThreeNode(curr->getParent()->getMiddleLeft())){
             curr->setSmallKey(curr->getParent()->getMiddleKey());
@@ -522,7 +503,7 @@ public:
     }
 
     //Restructure 
-    void Restructure(shared_ptr<Node>& curr){
+    void Index::Restructure(shared_ptr<Node>& curr){
         // left
         if(curr->getParent()->getLeft() == curr){
            
@@ -542,7 +523,7 @@ public:
 
     //Delete Leaf
     //curr taking the leaf node
-    void DeleteLeaf(shared_ptr<Node>& curr,string str){
+    void Index::DeleteLeaf(shared_ptr<Node>& curr,string str){
         //delete leaf
             if(IfTwoNode(curr)){
                 //two node
@@ -591,12 +572,12 @@ public:
     }
 
     //If leaf
-    bool Ifleaf(shared_ptr<Node> curr){
+    bool Index::Ifleaf(shared_ptr<Node> curr){
         return curr->getLeft() == nullptr && curr->getMiddleLeft() == nullptr && curr->getMiddleRight() == nullptr  && curr->getRight() == nullptr;
     }
 
         //Redistribute Left
-    void RedistributeLeft(shared_ptr<Node>& curr){
+    void Index::RedistributeLeft(shared_ptr<Node>& curr){
         // if it friend is threenode (A B): only refactoring the small part
         // if leaf 
         if(Ifleaf(curr)){
@@ -652,7 +633,7 @@ public:
 
 
     //Redistribute Right
-    void RedistributeRight(shared_ptr<Node>& curr){
+    void Index::RedistributeRight(shared_ptr<Node>& curr){
         // if it friend is threenode (A B): only refactoring the small part
         // if leaf 
         if(Ifleaf(curr)){
@@ -697,7 +678,7 @@ public:
     }
 
     // Merge to Left node
-    void Merge(shared_ptr<Node>& curr){
+    void Index::Merge(shared_ptr<Node>& curr){
 
         if(curr->getParent()->getMiddleLeft() == curr && curr->getParent() != nullptr){
             
@@ -784,7 +765,7 @@ public:
 
 
     //Replace with curr two node
-    void ReplaceTwoNode(shared_ptr<Node>& curr){
+    void Index::ReplaceTwoNode(shared_ptr<Node>& curr){
         //return curr->getSmallKey()->getValue();
         shared_ptr<Node> midleft = curr->getMiddleLeft();
         shared_ptr<Node> left = curr->getLeft();
@@ -808,7 +789,7 @@ public:
     }
 
     //Replace with curr three node small key
-    void ReplaceThreeNodeSmall(shared_ptr<Node>& curr){
+    void Index::ReplaceThreeNodeSmall(shared_ptr<Node>& curr){
         //return curr->getSmallKey()->getValue();
         shared_ptr<Node> midright = curr->getMiddleLeft();
         shared_ptr<Node> left = curr->getLeft();
@@ -831,7 +812,7 @@ public:
     }
 
     //Replace with curr three node
-    void ReplaceThreeNodeMid(shared_ptr<Node>& curr){
+    void Index::ReplaceThreeNodeMid(shared_ptr<Node>& curr){
         //return curr->getSmallKey()->getValue();
         shared_ptr<Node> right = curr->getRight();
         shared_ptr<Node> midleft = curr->getMiddleLeft();
@@ -858,7 +839,7 @@ public:
     }
 
     //Find Min 
-    shared_ptr<Node>& FindMin(shared_ptr<Node>& curr){
+    shared_ptr<Node>& Index::FindMin(shared_ptr<Node>& curr){
         if(curr == nullptr){
             throw "Min value not found";
         }
@@ -878,7 +859,7 @@ public:
     }
 
     //Find Max 
-    shared_ptr<Node>& FindMax(shared_ptr<Node>& curr) {
+    shared_ptr<Node>& Index::FindMax(shared_ptr<Node>& curr) {
         if(curr == nullptr){
             throw "Max value not found";
         }
@@ -910,19 +891,19 @@ public:
 
 
     //Get root ptr
-    shared_ptr<Node> getRoot(){
+    shared_ptr<Node> Index::getRoot(){
         return root;
     }
 
     //Print travserse, visit the key
-    void Print(){
+    void Index::Print(){
         PrintHelp(root);
  
         
     }
 
     //Print Help
-    void PrintHelp(shared_ptr<Node> curr){
+    void Index::PrintHelp(shared_ptr<Node> curr){
         if(curr == nullptr){
             cout << "ITS EMPTY" << endl;
             return;
@@ -961,27 +942,27 @@ public:
 
     //If two node 
     // (A)
-    bool IfTwoNode(shared_ptr<Node> curr){ 
+    bool Index::IfTwoNode(shared_ptr<Node> curr){ 
         //return curr->getLStr() == "" && curr->getLValue() == -99;
         return curr->getSmallKey() != nullptr && curr->getMiddleKey() == nullptr && curr->getLargeKey() == nullptr;
     }
 
     //If three node
     // (A B)
-    bool IfThreeNode(shared_ptr<Node> curr){
+    bool Index::IfThreeNode(shared_ptr<Node> curr){
         //return curr->getLStr() != "" && curr->getLValue() != -99;
         return curr->getSmallKey() != nullptr && curr->getMiddleKey() != nullptr && curr->getLargeKey() == nullptr;
     }
 
     // if four node
     // (A B C)
-    bool IfFourNode(shared_ptr<Node> curr){
+    bool Index::IfFourNode(shared_ptr<Node> curr){
         //return curr->getLStr() != "" && curr->getLValue() != -99;
         return curr->getSmallKey() != nullptr && curr->getMiddleKey() != nullptr && curr->getLargeKey() != nullptr;
     }
 
     //inserting two node situation
-    shared_ptr<Node> AddTwoNode(shared_ptr<Node> curr,shared_ptr<Key> newkeyptr){
+    shared_ptr<Node> Index::AddTwoNode(shared_ptr<Node> curr,shared_ptr<Key> newkeyptr){
         priority_queue<shared_ptr<Key>,vector<shared_ptr<Key>>,greater> pq;
         pq.push(curr->getSmallKey());
         pq.push(newkeyptr);
@@ -998,7 +979,7 @@ public:
     }
 
     //inserting three node situation
-    shared_ptr<Node> AddThreeNode(shared_ptr<Node> curr,shared_ptr<Key> newkeyptr){
+    shared_ptr<Node> Index::AddThreeNode(shared_ptr<Node> curr,shared_ptr<Key> newkeyptr){
         priority_queue<shared_ptr<Key>,vector<shared_ptr<Key>>,greater> pq;
         pq.push(curr->getSmallKey());
         pq.push(curr->getMiddleKey());
@@ -1016,7 +997,7 @@ public:
     }
 
     //split with no parent (A B C)
-    shared_ptr<Node> SplitWithNoParent(shared_ptr<Node>& curr){
+    shared_ptr<Node> Index::SplitWithNoParent(shared_ptr<Node>& curr){
         shared_ptr<Node> left, top, right;  
         left = make_shared<Node>(curr->getSmallKey());
         //cout << curr->getSmallKey()->getKey() << endl;
@@ -1056,7 +1037,7 @@ public:
     }
 
     //split with parent (left) twonode
-    shared_ptr<Node> SplitWithParentLeftTwoNode(shared_ptr<Node> curr){
+    shared_ptr<Node> Index::SplitWithParentLeftTwoNode(shared_ptr<Node> curr){
         shared_ptr<Node> left = make_shared<Node>(curr->getSmallKey());
         shared_ptr<Node> middleleft = make_shared<Node>(curr->getLargeKey());
 
@@ -1096,7 +1077,7 @@ public:
 }
 
     //split with parent (left) threenode
-    shared_ptr<Node> SplitWithParentLeftThreeNode(shared_ptr<Node> curr){
+    shared_ptr<Node> Index::SplitWithParentLeftThreeNode(shared_ptr<Node> curr){
         shared_ptr<Node> left = make_shared<Node>(curr->getSmallKey());
         shared_ptr<Node> middleleft = make_shared<Node>(curr->getLargeKey());
 
@@ -1139,7 +1120,7 @@ public:
     }
 
     //split with parent (right) twonode
-     shared_ptr<Node> SplitWithParentRightTwoNode(shared_ptr<Node> curr){
+     shared_ptr<Node> Index::SplitWithParentRightTwoNode(shared_ptr<Node> curr){
         shared_ptr<Node> middleleft = make_shared<Node>(curr->getSmallKey());
         shared_ptr<Node> right = make_shared<Node>(curr->getLargeKey());
 
@@ -1173,7 +1154,7 @@ public:
 
 
     //split with parent (right) threenode
-    shared_ptr<Node> SplitWithParentRightThreeNode(shared_ptr<Node> curr){
+    shared_ptr<Node> Index::SplitWithParentRightThreeNode(shared_ptr<Node> curr){
         shared_ptr<Node> middleright = make_shared<Node>(curr->getSmallKey());
         shared_ptr<Node> right = make_shared<Node>(curr->getLargeKey());
 
@@ -1204,7 +1185,3 @@ public:
 
         return curr->getParent();
      }
-
-
-
-};
