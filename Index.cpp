@@ -524,6 +524,13 @@
     //Delete Leaf
     //curr taking the leaf node
     void Index::DeleteLeaf(shared_ptr<Node>& curr,string str){
+        //Base case when only one node in tree
+        if(IfTwoNode(curr) && curr->getParent()==nullptr && Ifleaf(curr)){
+            curr->setSmallKey(nullptr);
+            //curr = nullptr;
+            root = nullptr;
+        }
+
         //delete leaf
             if(IfTwoNode(curr)){
                 //two node
