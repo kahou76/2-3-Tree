@@ -9,8 +9,9 @@
     //Insert an element in the index, associate the integer value with the element
     void Index::Insert(shared_ptr<string> strptr, int val){
         //same key same val
+        if(Find)
         if(Find(strptr) == val){
-            // cout << "same key with same val already inserted" << endl;
+            cout << "same key with same val already inserted" << endl;
             return;
         }else{
             InsertHelp(root,strptr,val);
@@ -60,6 +61,7 @@
             //when see the same key, replace it with diff val
             if(str.compare(curr->getSmallKey()->getKey()) == 0){
                 curr->getSmallKey()->setValue(val);
+                //cout << "1" << endl;
             }
 
             else if(str.compare(curr->getSmallKey()->getKey()) < 0){
@@ -76,6 +78,7 @@
             //when seeing the same key, replace with new val
             if(str.compare(curr->getSmallKey()->getKey()) == 0){
                curr->getSmallKey()->setValue(val);
+               //cout << "2" << endl;
             }
 
             else if(str.compare(curr->getSmallKey()->getKey()) < 0){
@@ -85,6 +88,7 @@
             //when seeing the same key, replace with new val
             else if(str.compare(curr->getMiddleKey()->getKey()) == 0){
                 curr->getMiddleKey()->setValue(val);
+                //cout << "3" << endl;
             }
 
             else if(str.compare(curr->getSmallKey()->getKey()) > 0 && str.compare(curr->getMiddleKey()->getKey()) < 0){
@@ -288,17 +292,17 @@
             return;
         }
 
-        cout << "string: "<< str << endl;
+        //cout << "string: "<< str << endl;
         //Base case when only one node in tree
         if(IfTwoNode(root)  && Ifleaf(root)){
-            cout << "yes I enter" << endl;
+            //cout << "yes I enter" << endl;
             root->setSmallKey(nullptr);
             //curr = nullptr;
-            cout << "asssdss" << endl;
+            //cout << "asssdss" << endl;
             root = nullptr;
-            cout << "2131321" << endl;
+            //cout << "2131321" << endl;
         }
-        cout << "string passed: "<< str << endl;
+        //cout << "string passed: "<< str << endl;
 
         shared_ptr<Node> curr = root;
         while(curr != nullptr){
@@ -306,6 +310,7 @@
         //if leaf
         if(Ifleaf(curr)){
             
+            //cout << "Entering DELELEAF" << endl;
             DeleteLeaf(curr,str);
             break;
         }
@@ -550,6 +555,7 @@
                     //return curr->getSmallKey()->getValue();
                     //Check if parent are two node or three node
 
+                    //cout << "OK it is two node" << endl;
                     //If parent is threenode
                     if(IfThreeNode(curr->getParent())){
                         Restructure(curr);
@@ -561,17 +567,21 @@
                         //delete MiddleLeft
                         if(curr->getParent()->getMiddleLeft() == curr){
                             
+
                             RedistributeRight(curr);
                             //break;
                             
                         }
                         //delete left
                         else if(curr->getParent()->getLeft() == curr){
+                            //cout << "COMING FOR YOU G: RedistributeLeft" << endl;
                             RedistributeLeft(curr);
                         }
 
 
                     }
+
+                    //
 
                 }
             }else{
@@ -615,6 +625,7 @@
             // then delete parent node for internal node
             else{
                 //join the left node
+                //cout << "COMING TO YOU G: ENTERING MERGE" << endl;
                 Merge(curr);
 
             }
@@ -713,29 +724,35 @@
         }
 
         else if(curr->getParent()->getLeft() == curr && curr->getParent() != nullptr){
+            //cout << "OK RIGHT HERE" << endl;
             curr->setSmallKey(curr->getParent()->getSmallKey());
             curr->setMiddleKey(curr->getParent()->getMiddleLeft()->getSmallKey());
             curr->getParent()->setSmallKey(nullptr);
             //curr = curr->getParent();
 
             if(!Ifleaf(curr)){
+                //cout << "shouldnt output" << endl;
                 curr->setMiddleLeft(curr->getParent()->getMiddleLeft()->getLeft());
                 curr->setRight(curr->getParent()->getMiddleLeft()->getMiddleLeft());
             }
         }
 
-        
+        //cout << "asdljla" << endl;
         curr = curr->getParent();
         
 
         curr->setMiddleLeft(nullptr); 
         
         //curr->setSmallKey(nullptr);     
+        //cout << "asdakdjl" << endl;
+        //cout << curr->getSmallKey()->getKey() << " " << curr->getLeft()->getSmallKey()->getKey() << " " << curr->getLeft()->getMiddleKey()->getKey() << endl;
         if(curr->getParent() == nullptr && curr->getSmallKey() == nullptr && curr->getLeft() != nullptr){
             
             curr = curr->getLeft();
             curr->setParent(nullptr);
             root = curr;
+            root->setParent(nullptr);
+            //cout << "ashdhdeoahod" << endl;
 
             // root = curr->getParent()->getLeft();
             // root->setParent(nullptr);
@@ -771,6 +788,41 @@
 
         //If parent is nullptr, which means reaching the root aleady
         //Base case
+
+        else{
+            // cout << "FUCKKKKKKKKKKKKKKKk" << endl;
+            // if(curr->getParent() == nullptr){
+            //     cout << "1" << endl;
+            // }else{
+            //     //cout << curr->getParent()->getSmallKey()->getKey() << endl;
+            //     if(curr->getParent()->getSmallKey() == nullptr){
+            //         cout << "asd" << endl;
+            //     }
+
+            //     if(curr->getParent()->getMiddleKey() == nullptr){
+            //         cout << "asdhasd" << endl;
+            //     }
+
+            //     if(curr->getParent()->getLargeKey() == nullptr){
+            //         cout << "64545" << endl;
+            //     }
+            // }
+            // if(curr->getSmallKey() == nullptr){
+            //     cout << "2" << endl;
+            // }
+            // if(curr->getLeft() != nullptr){
+            //     cout << "3" << endl;
+            // }
+
+
+            if(curr->getSmallKey() == nullptr && curr->getLeft() != nullptr){
+                 curr = curr->getLeft();
+                curr->setParent(nullptr);
+                root = curr;
+                //root->setParent(nullptr);
+                cout << "FUCKING DEAL" << endl;
+            }
+        }
         
 
         
@@ -921,6 +973,11 @@
         
     }
 
+    //ascii
+    // int asc(string str){
+    //     return (int)str[0];
+    // }
+
     //Print Help
     void Index::PrintHelp(shared_ptr<Node> curr){
         if(curr == nullptr){
@@ -933,11 +990,14 @@
             //If two node
             if(IfTwoNode(curr)){
                 cout << "TwoNode key: " << curr->getSmallKey()->getKey() << " TwoNode Value: " << curr->getSmallKey()->getValue() << endl;
+                //cout << "TwoNode key ascii: " << curr->getSmallKey()->getKey() << " TwoNode Value: " << curr->getSmallKey()->getValue() << endl;
+                return;
             }else{
                 //Is three node then
                 cout << "ThreeNode Small key: " << curr->getSmallKey()->getKey() << " ThreeNode Small Value: " << curr->getSmallKey()->getValue() << endl;
                 cout << "ThreeNode Middle key: " << curr->getMiddleKey()->getKey() << " ThreeNode Middle Value: " << curr->getMiddleKey()->getValue() << endl;
-
+                
+                return;
             }
         }
 
@@ -957,6 +1017,7 @@
 
 
         }
+        return;
     }
 
     //If two node 

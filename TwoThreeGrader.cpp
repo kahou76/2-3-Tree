@@ -1,173 +1,185 @@
-// #include "Student.h"
-// #include "Index.h"
+#include "Student.h"
+#include "Index.h"
 
-// // #include <stdio.h>
-// // #include <pthread.h>
-// #include <iostream> //cout
-// #include <memory> //shared pointer
-// #include <vector> //vector
-// #include <string> //string
-// #include <sstream> //stringstream
-// #include <random> //random numbers
-// #include <thread> //timeout thread
+// #include <stdio.h>
+// #include <pthread.h>
+#include <iostream> //cout
+#include <memory> //shared pointer
+#include <vector> //vector
+#include <string> //string
+#include <sstream> //stringstream
+#include <random> //random numbers
+#include <thread> //timeout thread
+#include <set>
 
-// //high resolution timers
-// #include <ctime>
-// #include <ratio>
-// #include <chrono>
+//high resolution timers
+#include <ctime>
+#include <ratio>
+#include <chrono>
 
-// #define SEPARATOR '|'
+#define SEPARATOR '|'
 
-// bool test1(bool show) {
-//     Index i;
-//     std::shared_ptr<std::string> simple = std::make_shared<std::string>("Hello");
-//     i.Insert(simple, 77);
-//     int result = i.Find(simple);
-//     return result == 77;
-// }
+bool test1(bool show) {
+    Index i;
+    std::shared_ptr<std::string> simple = std::make_shared<std::string>("Hello");
+    i.Insert(simple, 77);
+    int result = i.Find(simple);
+    return result == 77;
+}
 
-// bool test2(bool show) {
-//     Index index;
+bool test2(bool show) {
+    Index index;
 
-//     for (int i = 0; i < 1000; i++) {
-//         std::stringstream s;
-//         s << i;
-//         std::shared_ptr<std::string> simple = std::make_shared<std::string>(s.str());
-//         //cout << s.str() << endl;
-//         index.Insert(simple, i);
-//     }
-//     std::shared_ptr<std::string> search = std::make_shared<std::string>("734");
-//     int result = index.Find(search);
-//     //index.Print();
-//     //cout << result << endl;
-//     return result == 734;
-// }
+    for (int i = 0; i < 1000; i++) {
+        std::stringstream s;
+        s << i;
+        std::shared_ptr<std::string> simple = std::make_shared<std::string>(s.str());
+        //cout << s.str() << endl;
+        index.Insert(simple, i);
+    }
+    std::shared_ptr<std::string> search = std::make_shared<std::string>("734");
+    int result = index.Find(search);
+    index.Print();
+    cout << result << endl;
+    return result == 734;
+}
 
-// bool test3(bool show) {
-//     Index index;
+bool test3(bool show) {
+    Index index;
 
-// 	std::random_device rd;
-// 	std::mt19937 generator(rd()); //Mersenne Twister
-// 	std::uniform_int_distribution<int> uniform_distribution(
-// 			0,
-// 			200000);
+	std::random_device rd;
+	std::mt19937 generator(rd()); //Mersenne Twister
+	std::uniform_int_distribution<int> uniform_distribution(
+			0,
+			200000);
 
-//     int unique = 0;
-//     for (int i = 0; i < 100000; i++) {
-//         std::stringstream s;
-//         int val = uniform_distribution(generator);
-//         s << val;
-//         std::shared_ptr<std::string> key = std::make_shared<std::string>(s.str());
-//         if (index.Find(key) < 0) {
-//             index.Insert(key, val);
-//             unique++;
-//         }
-//     }
+    int unique = 0;
+    for (int i = 0; i < 100000; i++) {
+        std::stringstream s;
+        int val = uniform_distribution(generator);
+        s << val;
+        std::shared_ptr<std::string> key = std::make_shared<std::string>(s.str());
+        if (index.Find(key) < 0) {
+            index.Insert(key, val);
+            unique++;
+        }
+    }
 
-//     int found = 0;
-//     for (int i = 0; i < 200000; i++) {
-//         std::stringstream s;
-//         s << i;
-//         std::shared_ptr<std::string> key = std::make_shared<std::string>(s.str());
-//         int val = index.Find(key);
-//         if (val == i) {
-//             found++;
-//         }
-//     }
+    int found = 0;
+    for (int i = 0; i < 200000; i++) {
+        std::stringstream s;
+        s << i;
+        std::shared_ptr<std::string> key = std::make_shared<std::string>(s.str());
+        int val = index.Find(key);
+        if (val == i) {
+            found++;
+        }
+    }
 
-//     return found > 0;
-//  }
+    return found > 0;
+ }
 
-// bool test4(bool show) {
-//     Index index;
+bool test4(bool show) {
+    Index index;
 
-//     for (int i = 0; i < 100000; i++) {
-//         std::stringstream s;
-//         s << i;
-//         std::shared_ptr<std::string> simple = std::make_shared<std::string>(s.str());
-//         index.Insert(simple, i);
-//     }
-//     std::shared_ptr<std::string> search = std::make_shared<std::string>("77341");
+    for (int i = 0; i < 100000; i++) {
+        std::stringstream s;
+        s << i;
+        std::shared_ptr<std::string> simple = std::make_shared<std::string>(s.str());
+        index.Insert(simple, i);
+    }
+    std::shared_ptr<std::string> search = std::make_shared<std::string>("77341");
 
-//     index.Remove(search);
+    index.Remove(search);
 
-//     int result = index.Find(search);
-//     return result == -1;
-//  }
+    int result = index.Find(search);
+    return result == -1;
+ }
 
-// bool test5(bool show) { 
-//     Index index;
+bool test5(bool show) { 
+    Index index;
 
-// 	std::random_device rd;
-// 	std::mt19937 generator(rd()); //Mersenne Twister
-// 	std::uniform_int_distribution<int> uniform_distribution(
-// 			0,
-// 			2000000);
+	std::random_device rd;
+	std::mt19937 generator(rd()); //Mersenne Twister
+	std::uniform_int_distribution<int> uniform_distribution(
+			0,
+			2000000);
 
-//     std::vector<std::shared_ptr<std::string>> keys;
-//     for (int i = 0; i < 10; i++) {
-//         std::stringstream s;
-//         // int val = uniform_distribution(generator);
-//         // s << val;
-//         s << i;
-//         std::shared_ptr<std::string> key = std::make_shared<std::string>(s.str());
-//         keys.push_back(key);
-//         index.Insert(key, i);
-//     }
+    std::vector<std::shared_ptr<std::string>> keys;
+    for (int i = 0; i < 25; i++) {
+        std::stringstream s;
+        // int val = uniform_distribution(generator);
+        // s << val;
+        s << i;
+        std::shared_ptr<std::string> key = std::make_shared<std::string>(s.str());
+        keys.push_back(key);
+        index.Insert(key, i);
+    }
 
-//     for (std::shared_ptr<std::string>& s : keys) {
-//         if (index.Find(s) >= 0) {
-//             index.Remove(s);
-//         }
-//         if (index.Find(s) >= 0) {
-//             return false;
-//         }
-//     }
-//     return true;
-//  }
+    int count = 0;
+    int c = 0;
+    set<string> testset;
+    string t = "";
+    for (std::shared_ptr<std::string>& s : keys) {
+        if (index.Find(s) >= 0) {
+            if(testset.count(*s)){
+                c++;
+            }
+            testset.insert(*s);
+            index.Remove(s);
+        }
+        if (index.Find(s) >= 0) {
+            count++;
+            //return false;
+        }
+    }
+    cout << "duplicate string: "<< c << endl;
+    cout << "The count of failure : " << count << endl;
+    return false;
+ }
 
-// void testCase(int testNumber, bool show) {
-//     std::cout << testNumber << SEPARATOR;
-//     auto begin = std::chrono::high_resolution_clock::now();
-//     bool passed = false;
-//     switch (testNumber) {
-//         case 1: passed = test1(show); break;
-//         case 2: passed = test2(show); break;
-//         case 3: passed = test3(show); break;
-//         case 4: passed = test4(show); break;
-//         case 5: passed = test5(show); break;
-//         default: std::cout << "Unknown test case.";
-//     }
-//     std::cout << ((passed)?"passed":"failed");
-//     auto end = std::chrono::high_resolution_clock::now();
-//     std::cout << SEPARATOR;
-//     std::chrono::duration<double> time_span = end - begin;
-//     std::cout << time_span.count();
-// }
+void testCase(int testNumber, bool show) {
+    std::cout << testNumber << SEPARATOR;
+    auto begin = std::chrono::high_resolution_clock::now();
+    bool passed = false;
+    switch (testNumber) {
+        case 1: passed = test1(show); break;
+        case 2: passed = test2(show); break;
+        case 3: passed = test3(show); break;
+        case 4: passed = test4(show); break;
+        case 5: passed = test5(show); break;
+        default: std::cout << "Unknown test case.";
+    }
+    std::cout << ((passed)?"passed":"failed");
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << SEPARATOR;
+    std::chrono::duration<double> time_span = end - begin;
+    std::cout << time_span.count();
+}
 
-// int main(int argc, char** argv) {
+int main(int argc, char** argv) {
 
-//     Student student;
-//     std::cout << student.FirstName() << SEPARATOR << student.LastName() << SEPARATOR << student.StudentIdentifier() << SEPARATOR << std::flush;
+    Student student;
+    std::cout << student.FirstName() << SEPARATOR << student.LastName() << SEPARATOR << student.StudentIdentifier() << SEPARATOR << std::flush;
 
-//     // std::thread t([](){
-//     //     std::this_thread::sleep_for(std::chrono::seconds(60));
-//     //     std::cout << "Timer elapsed."<<std::endl;
-//     //     exit(1);
-//     // });
+    // std::thread t([](){
+    //     std::this_thread::sleep_for(std::chrono::seconds(60));
+    //     std::cout << "Timer elapsed."<<std::endl;
+    //     exit(1);
+    // });
 
-//     bool showDebugOutput = true;
+    bool showDebugOutput = true;
 
-//     testCase(1, showDebugOutput); // simple insert
-//     std::cout << SEPARATOR << std::flush;
-//     testCase(2, showDebugOutput); // simple find
-//     std::cout << SEPARATOR << std::flush;
-//     testCase(3, showDebugOutput); // simple remove
-//     std::cout << SEPARATOR << std::flush;
-//     testCase(4, showDebugOutput); // complex insert/find
-//     std::cout << SEPARATOR << std::flush;
-//     testCase(5, showDebugOutput); // complex insert/find/remove
-//     std::cout << std::endl;
+    testCase(1, showDebugOutput); // simple insert
+    std::cout << SEPARATOR << std::flush;
+    testCase(2, showDebugOutput); // simple find
+    std::cout << SEPARATOR << std::flush;
+    testCase(3, showDebugOutput); // simple remove
+    std::cout << SEPARATOR << std::flush;
+    testCase(4, showDebugOutput); // complex insert/find
+    std::cout << SEPARATOR << std::flush;
+    testCase(5, showDebugOutput); // complex insert/find/remove
+    std::cout << std::endl;
 
-//     exit(0);
-// }
+    exit(0);
+}
